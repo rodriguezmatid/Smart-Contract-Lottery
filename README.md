@@ -21,3 +21,6 @@ This code is to create a probability random smart contract lottery
     1. Work on a local chain
     2. Forked Testnet
     3. Forked Mainnet
+
+forge test --match-test testRaffleRevertsWhenYouDontPayEnough
+# Solo testea ese test
