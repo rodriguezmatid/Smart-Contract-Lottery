@@ -31,7 +31,7 @@ contract Raffle is VRFConsumerBaseV2 {
     uint256 private immutable i_interval;
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     bytes32 private immutable i_gasLane;
-    uint64 private immutable i_suscriptionId;
+    uint64 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
     
     address payable[] private s_players;
@@ -48,14 +48,14 @@ contract Raffle is VRFConsumerBaseV2 {
         uint256 interval, 
         address vrfCoordinator, 
         bytes32 gasLane,
-        uint64 suscriptionId,
+        uint64 subscriptionId,
         uint32 callbackGasLimit
     ) VRFConsumerBaseV2(vrfCoordinator) {
         i_entranceFee = entranceFee;
         i_interval = interval;
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinator);
         i_gasLane = gasLane;
-        i_suscriptionId = suscriptionId;
+        i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
 
         s_raffleState = RaffleState.OPEN;
@@ -78,7 +78,7 @@ contract Raffle is VRFConsumerBaseV2 {
      * 1. The time interval has passed between raffle runs
      * 2. The raffle is in the Open state
      * 3. The contract has ETH (aka, players)
-     * 4. Implicit. The suscription is funded with LINK
+     * 4. Implicit. The subscriptionId is funded with LINK
      */
     function checkUpkeep(bytes memory) public view returns (bool upkeepNeeded, bytes memory) {
         bool timeHasPassed = (block.timestamp - s_lastTimeStamp) >= i_interval;
@@ -103,7 +103,7 @@ contract Raffle is VRFConsumerBaseV2 {
         // 2. Get the random number
         i_vrfCoordinator.requestRandomWords(
             i_gasLane, // gas lane
-            i_suscriptionId,
+            i_subscriptionId,
             REQUEST_CONFIRMATIONS,
             i_callbackGasLimit,
             NUM_WORDS

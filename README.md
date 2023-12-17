@@ -24,3 +24,6 @@ This code is to create a probability random smart contract lottery
 
 forge test --match-test testRaffleRevertsWhenYouDontPayEnough
 # Solo testea ese test
+
+forge script script/Interactions.s.sol:FundSubscription
+source .env
