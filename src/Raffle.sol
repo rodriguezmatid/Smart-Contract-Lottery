@@ -3,6 +3,7 @@ pragma solidity ^0.8.18;
 
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import {console} from "forge-std/console.sol";
 
 /**
  * @title A sample raffle contract
@@ -42,6 +43,7 @@ contract Raffle is VRFConsumerBaseV2 {
     /** Events */
     event EnteredRaffle(address indexed player);
     event WinnerPicked(address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     constructor(
         uint256 entranceFee, 
@@ -99,15 +101,16 @@ contract Raffle is VRFConsumerBaseV2 {
             revert Raffle__UpkeepNotNeeded(address(this).balance, s_players.length, uint256(s_raffleState));
         }
         s_raffleState = RaffleState.CALCULATING;
+        uint256 requestId = i_vrfCoordinator.requestRandomWords(
         // 1. Request the RNG
         // 2. Get the random number
-        i_vrfCoordinator.requestRandomWords(
             i_gasLane, // gas lane
             i_subscriptionId,
             REQUEST_CONFIRMATIONS,
             i_callbackGasLimit,
             NUM_WORDS
         );
+        emit RequestedRaffleWinner(requestId);
     }
 
     function fulfillRandomWords(uint256 , uint256[] memory randomWords) internal override {
@@ -140,5 +143,17 @@ contract Raffle is VRFConsumerBaseV2 {
 
     function getPlayer(uint256 indexOfPlayer) external view returns(address){
         return s_players[indexOfPlayer];
+    }
+
+    function getRecentWinner() external view returns (address) {
+        return s_recentWinner;
+    }
+
+    function getLengthOfPlayers() external view returns(uint256) {
+        return s_players.length;
+    }
+
+    function getLastTimeStamp() external view returns(uint256) {
+        return s_lastTimeStamp;
     }
 }

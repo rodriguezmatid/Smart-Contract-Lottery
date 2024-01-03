@@ -27,3 +27,8 @@ forge test --match-test testRaffleRevertsWhenYouDontPayEnough
 
 forge script script/Interactions.s.sol:FundSubscription
 source .env
+
+# give us a file that tells us exactly which lines we haven't coverage
+forge coverage --report debug
+# give us a file that tells us exactly which lines we haven't coverage and creates a file
+forge coverage --report debug > coverage.txt
